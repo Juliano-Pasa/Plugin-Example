@@ -3,7 +3,6 @@ package com.example;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 
-import com.google.inject.spi.Message;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -14,12 +13,13 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.api.WorldView;
 
 import java.text.MessageFormat;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Example"
+	name = "AAA Example"
 )
 public class ExamplePlugin extends Plugin
 {
@@ -29,12 +29,15 @@ public class ExamplePlugin extends Plugin
 	@Inject
 	private ExampleConfig config;
 
+	private WorldView worldView;
+
 	private int count;
 
 	@Override
 	protected void startUp() throws Exception
 	{
 		count = 0;
+		worldView = client.getWorldView(-1);
 		log.info("Example started!");
 	}
 
@@ -56,6 +59,10 @@ public class ExamplePlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
+		if (client.getGameState() == GameState.LOGGED_IN)
+		{
+			log.info(MessageFormat.format("Total players nearby: {0}", worldView.players().getSize()));
+		}
 		count += 1;
 	}
 
